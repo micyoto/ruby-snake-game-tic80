@@ -8,7 +8,6 @@
 
 [![SO][Ubuntu-badge]][Ubuntu-url]
 [![IDE][vscode-badge]][vscode-url]
-[![Make][make-badge]][make-url]
 [![Linguagem][ruby-badge]][ruby-url]
 
 Linguagens de Programação <br>
@@ -230,34 +229,15 @@ CEFET-MG Campus V <br>
 
   1. Clone o repositório no diretório desejado:
   ```console
-  git clone https://github.com/alvarengazv/lac-algorithm.git
-  cd lac-algorithm
+  git clone https://github.com/dudatsouza/ruby-snake-game-tic80.git
+  cd ruby-snake-game-tic80
   ```
-  2. Compile o programa com o ___make___, o que gera a pasta `build`, que contém arquivos de objeto e um arquivo executável:
+  2. Execute o programa da pasta `build` após a compilação:
   ```console
-  make
-  ```
-  3. Execute o programa da pasta `build` após a compilação:
-  ```console
-  make run
+  tic80 src/snake_game.tic
   ```
 
-  4. Se necessário, apague a última compilação da pasta `build`:
-  ```console
-  make clean
-  ```
-
-  O programa estará pronto para ser testado. Veja a tabela abaixo com alguns comandos do makefile:
-
-</div>
-
-<div align="center">
-
-  | Comando      | **Descrição**                           |
-  |--------------|-----------------------------------------|
-  | `make`       | Compila o programa.                     |
-  | `make run`   | Executa o programa com o arquivo de entrada fornecido. |
-  | `make clean` | Remove os arquivos compilados.          |
+  O jogo estará pronto para ser testado. Veja a tabela abaixo com alguns comandos do makefile:
 
 </div>
 
@@ -274,8 +254,7 @@ CEFET-MG Campus V <br>
 <div align='center'>
 
 ![Ubuntu][ubuntu-badge]
-![GCC][gcc-badge]
-![Make][make-badge] 
+![Ruby][ruby-badge]
 
 SO | Interpretador
 --- | --- 
