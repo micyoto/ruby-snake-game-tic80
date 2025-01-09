@@ -6,6 +6,7 @@
 
 <div align='center'>
 
+[![TIC-80](/images/faviconTIC80.png)](https://tic80.com)
 [![SO][Ubuntu-badge]][Ubuntu-url]
 [![IDE][vscode-badge]][vscode-url]
 [![Linguagem][ruby-badge]][ruby-url]
@@ -127,8 +128,7 @@ CEFET-MG Campus V <br>
   - [`src/`](src): diretório contendo os arquivos de código-fonte do projeto.
 
   - [`.gitignore`](.gitignore): arquivo contendo a lista de arquivos e diretórios a serem ignorados pelo Git.
-  - [`make.sh`](make.sh): arquivo de script para compilar o código-fonte do projeto.
-  - [`makefile`](makefile): arquivo contendo as regras para compilar o código-fonte do projeto.
+
   - [`README.md`](README.md): arquivo contendo a documentação do projeto.
 
   De uma forma compacta e organizada, os arquivos e diretórios estão dispostos da seguinte forma:
@@ -137,12 +137,11 @@ CEFET-MG Campus V <br>
   |
   │
   ├── images
-  │
+  │ └── faviconTIC80.png
   ├── src
-  │
+  │ ├── snake_game.rb
+  │ └── snake_game.tic
   ├── .gitignore
-  ├── make.sh
-  ├── makefile
   └── README.md
   ```
   
@@ -253,6 +252,7 @@ CEFET-MG Campus V <br>
 
 <div align='center'>
 
+[![TIC-80](/images/faviconTIC80.png)](https://tic80.com)
 ![Ubuntu][ubuntu-badge]
 ![Ruby][ruby-badge]
 
