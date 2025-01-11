@@ -140,6 +140,7 @@ def draw
 end
  
 init
+
 def TIC
   update
   draw
