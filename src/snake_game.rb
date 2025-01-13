@@ -77,9 +77,6 @@ def draw
     end
   end
 
-  # Exibe o score
-  print("SCORE: #{$score}", 10, 10, 12)
-     
   #Muda a direção da cabeça 
   head_sprite = case $direction
   when [1, 0]  # Direita
@@ -90,25 +87,12 @@ def draw
     66
   when [0, 1]  # Baixo
     68
+  else 
+    65
   end
    
-  
-  #Pinta o corpo 
-  if $snake.length > 1  
-    $snake[1..-2].each do |segment|
-      spr(64, segment[0] * 8, segment[1] * 8)   
-    end
-  end
-
-  head = $snake[0]
-  spr(head_sprite, head[0] * 8, head[1] * 8)
-
-  if $snake.length == 1  
-    spr(head_sprite, $snake[0][0] * 8, $snake[0][1] * 8)   
-  end  
-
   #Pinta o rabo
-  tail_sprite = 64  
+  tail_sprite = 64
   if $snake.length > 1  
     tail_sprite = case [$snake[-2][0] - $snake[-1][0], $snake[-2][1] - $snake[-1][1]]
     when [1, 0]  # Direita
@@ -120,12 +104,26 @@ def draw
     when [0, 1]  # Baixo
       72  
     else
-      64   
+      64
     end
   end
-   
+  
+  #Pinta o corpo
+  if $snake.length > 1
+    $snake[1..-2].each do |segment|
+      spr(64, segment[0] * 8, segment[1] * 8)   
+    end
+  end
+
   tail = $snake[-1]
   spr(tail_sprite, tail[0] * 8, tail[1] * 8)
+
+  head = $snake[0]
+  spr(head_sprite, head[0] * 8, head[1] * 8)
+
+  if $snake.length == 1  
+    spr(head_sprite, $snake[0][0] * 8, $snake[0][1] * 8)   
+  end  
 
   # Desenha a comida com sprites
   spr(70, $food[0] * 8, $food[1] * 8)  # Índice 2 para o sprite da comida
@@ -137,6 +135,11 @@ def draw
     y = 68
     print(text, x, y, 12)
   end
+
+# Exibe o score
+print("SCORE: #{$score}", 10, 10, 12)
+     
+
 end
  
 init

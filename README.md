@@ -233,7 +233,7 @@ CEFET-MG Campus V <br>
   ```
   2. Execute o programa da pasta `build` após a compilação:
   ```console
-  tic80 src/snake_game.tic
+  tic80 src/snake_game.tic --fs=./src
   ```
 
   O jogo estará pronto para ser testado. Veja a tabela abaixo com alguns comandos do makefile:
