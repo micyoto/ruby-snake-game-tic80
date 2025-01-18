@@ -1,7 +1,7 @@
 # title:   Snake Game
 # author:  Guilherme Alvarenga, Joao P., Maria Eduarda, Michael Todoroki, Pedro Freitas
 # desc:    LP - Grupo Skane Game (Ruby)
-# version: 0.1
+# version: 0.2
 # script:  ruby
 
 # Variáveis
@@ -10,15 +10,20 @@ def init
   $snake = [[10, 10]]   
   $direction = [1, 0]   
   $next_direction = [1, 0]
-  $food = [rand(30), rand(17)]  
+  $foods = Array.new(1 + rand(3)) { [rand(30), rand(17)] }  # Substituído rand(1..3) por 1 + rand(3)
   $game_over = false
   $frame_counter = 0
+  $speed_factor = 10 
 end
+
 
 def update
   return if $game_over
 
-  # Captura a proxima direcao imediatamente
+
+  adjust_speed
+
+  # Captura a próxima direção imediatamente
   if btn(0)
     $next_direction = [0, -1] if $direction != [0, 1]
   elsif btn(1) 
@@ -33,9 +38,21 @@ def update
   $frame_counter += 1
 
   # Mover a cobra a cada 10 frames
-  if $frame_counter % 10 == 0
+  if $frame_counter % $speed_factor == 0
     $direction = $next_direction
     move_snake
+  end
+end
+
+def adjust_speed
+  # Garante que $last_speed_update e $score são números
+  $last_speed_update ||= 0
+  $score ||= 0
+
+  # Reduz o speed_factor quando o score ultrapassa múltiplos de 500, até um mínimo de 2
+  if $score >= $last_speed_update + 500
+    $speed_factor = [2, $speed_factor - 1].max
+    $last_speed_update += 500
   end
 end
 
@@ -48,10 +65,15 @@ def move_snake
   head[1] = 16 if head[1] < 0
   head[1] = 0 if head[1] > 16
 
-  if head == $food
+  if $foods.include?(head)
     $snake.unshift(head)
-    $food = [rand(30), rand(17)]
+    $foods.delete(head)  # Remove a maçã comida
     $score += 30  # Incrementa o score em 30 pontos
+
+    # Gera novas maçãs se todas tiverem sido comidas
+    if $foods.empty?
+      $foods = Array.new(1 + rand(3)) { [rand(30), rand(17)] } 
+    end
   else
     $snake.pop
     $snake.unshift(head)
@@ -125,8 +147,10 @@ def draw
     spr(head_sprite, $snake[0][0] * 8, $snake[0][1] * 8)   
   end  
 
-  # Desenha a comida com sprites
-  spr(70, $food[0] * 8, $food[1] * 8)  # Índice 2 para o sprite da comida
+  # Desenha as comidas com sprites
+  $foods.each do |food|
+    spr(70, food[0] * 8, food[1] * 8)  
+  end
 
   # Mensagem de Game Over
   if $game_over
