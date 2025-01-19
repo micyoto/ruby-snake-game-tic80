@@ -4,7 +4,7 @@
 # version: 0.2
 # script:  ruby
 
-# Variáveis
+# Variáveis globais
 def init
   $score = 0
   $snake = [[10, 10]]   
@@ -12,6 +12,7 @@ def init
   $next_direction = [1, 0]
   $foods = Array.new(1 + rand(3)) { [rand(30), rand(17)] }  # Substituído rand(1..3) por 1 + rand(3)
   $game_over = false
+  $game_win = false
   $frame_counter = 0
   $speed_factor = 10 
 end
@@ -19,7 +20,6 @@ end
 
 def update
   return if $game_over
-
 
   adjust_speed
 
@@ -68,11 +68,13 @@ def move_snake
   if $foods.include?(head)
     $snake.unshift(head)
     $foods.delete(head)  # Remove a maçã comida
-    $score += 30  # Incrementa o score em 30 pontos
+    $score += 50  # Incrementa o score em 50 pontos
 
     # Gera novas maçãs se todas tiverem sido comidas
     if $foods.empty?
-      $foods = Array.new(1 + rand(3)) { [rand(30), rand(17)] } 
+      # as maçãs só aparecem em posições válidas, fora do corpo da cobra
+      $foods = Array.new(1 + rand(3)) { [rand(30), rand(17)] }  # Substituído rand(1..3) por 1 + rand(3)
+      $foods.reject! { |food| $snake.include?(food) }
     end
   else
     $snake.pop
@@ -80,6 +82,7 @@ def move_snake
   end
 
   check_collision
+  check_win
 end
 
 def check_collision
@@ -89,13 +92,35 @@ def check_collision
   end
 end
 
+def check_win
+  if $snake.length == 30 * 17
+    $game_win = true
+  end
+end
+
+def direction_change(segment)
+  index = $snake.index(segment)
+  return nil if index == 0 || index == $snake.length - 1
+
+  prev_segment = $snake[index - 1]
+  next_segment = $snake[index + 1]
+
+  prev_direction = [segment[0] - prev_segment[0], segment[1] - prev_segment[1]]
+  next_direction = [next_segment[0] - segment[0], next_segment[1] - segment[1]]
+
+  [prev_direction, next_direction]
+end
+
 def draw
   cls(0)
+  if $snake.length == 1
+    $snake.unshift([$snake[0][0] + $direction[0], $snake[0][1] + $direction[1]])
+  end
  
-  #Pinta o fundo com o sprite 69
-  (0..29).each do |x|  
-    (0..17).each do |y|   
-      spr(69, x * 8, y * 8)   
+  #Pinta o fundo com o sprite 69 alternadamente com o sprite 75
+  (0..29).each do |x|
+    (0..16).each do |y|
+      spr((x + y) % 2 == 0 ? 69 : 75, x * 8, y * 8)
     end
   end
 
@@ -114,38 +139,77 @@ def draw
   end
    
   #Pinta o rabo
-  tail_sprite = 64
-  if $snake.length > 1  
-    tail_sprite = case [$snake[-2][0] - $snake[-1][0], $snake[-2][1] - $snake[-1][1]]
-    when [1, 0]  # Direita
-      71  
-    when [-1, 0] # Esquerda
-      73  
-    when [0, -1] # Cima
-      74   
-    when [0, 1]  # Baixo
-      72  
-    else
-      64
-    end
+  tail_sprite = case [$snake[-2][0] - $snake[-1][0], $snake[-2][1] - $snake[-1][1]]
+  when [1, 0]  # Direita
+    71  
+  when [-1, 0] # Esquerda
+    73  
+  when [0, -1] # Cima
+    74   
+  when [0, 1]  # Baixo
+    72  
+  else
+    64
   end
   
   #Pinta o corpo
   if $snake.length > 1
     $snake[1..-2].each do |segment|
-      spr(64, segment[0] * 8, segment[1] * 8)   
+      # Pinta o corpo da cobra com o sprite 64, se a direção do sprite for horizontal, ou 76, se for vertical
+      # se for no canto para a 0, pinta com o sprite 77
+      directions = direction_change(segment)
+
+      prev_direction, next_direction = directions
+      body = 64
+
+      if prev_direction == [1, 0] && next_direction == [0, 1] || prev_direction == [0, 1] && next_direction == [1, 0]
+        if prev_direction == [1, 0]
+          body = 79
+        else
+          body = 77
+        end
+      elsif prev_direction == [1, 0] && next_direction == [0, -1] || prev_direction == [0, -1] && next_direction == [1, 0]
+        if prev_direction == [1, 0]
+          body = 63
+        else
+          body = 78
+        end
+      elsif prev_direction == [-1, 0] && next_direction == [0, 1] || prev_direction == [0, 1] && next_direction == [-1, 0]
+        if prev_direction == [-1, 0]
+          body = 78
+        else
+          body = 63
+        end
+      elsif prev_direction == [-1, 0] && next_direction == [0, -1] || prev_direction == [0, -1] && next_direction == [-1, 0]
+        if prev_direction == [-1, 0]
+          body = 77
+        else
+          body = 79
+        end
+      else
+        body = case [$snake[$snake.index(segment) - 1][0] - segment[0], $snake[$snake.index(segment) - 1][1] - segment[1]]
+        when [1, 0]  # Direita
+          64  
+        when [-1, 0] # Esquerda
+          64  
+        when [0, -1] # Cima
+          76   
+        when [0, 1]  # Baixo
+          76  
+        else
+          64
+        end
+      end
+      
+      spr(body, segment[0] * 8, segment[1] * 8, 6)
     end
   end
 
   tail = $snake[-1]
-  spr(tail_sprite, tail[0] * 8, tail[1] * 8)
+  spr(tail_sprite, tail[0] * 8, tail[1] * 8, 6)
 
   head = $snake[0]
-  spr(head_sprite, head[0] * 8, head[1] * 8)
-
-  if $snake.length == 1  
-    spr(head_sprite, $snake[0][0] * 8, $snake[0][1] * 8)   
-  end  
+  spr(head_sprite, head[0] * 8, head[1] * 8, 6)
 
   # Desenha as comidas com sprites
   $foods.each do |food|
@@ -155,6 +219,14 @@ def draw
   # Mensagem de Game Over
   if $game_over
     text = "GAME OVER"
+    x = 95
+    y = 68
+    print(text, x, y, 12)
+  end
+
+  # Mensagem de Vitória
+  if $game_win
+    text = "PARABÉNS PELA VITÓRIA!"
     x = 95
     y = 68
     print(text, x, y, 12)
