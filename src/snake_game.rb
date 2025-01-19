@@ -120,7 +120,7 @@ def draw
   #Pinta o fundo com o sprite 69 alternadamente com o sprite 75
   (0..29).each do |x|
     (0..16).each do |y|
-      spr((x + y) % 2 == 0 ? 69 : 75, x * 8, y * 8)
+      spr((x + y) % 2 == 0 ? 69 : 75, x * 8, y * 8,-1)
     end
   end
 
@@ -213,7 +213,7 @@ def draw
 
   # Desenha as comidas com sprites
   $foods.each do |food|
-    spr(70, food[0] * 8, food[1] * 8)  
+    spr(70, food[0] * 8, food[1] * 8,-1)  
   end
 
   # Mensagem de Game Over
