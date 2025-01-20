@@ -1,7 +1,7 @@
 # title:   Snake Game
 # author:  Guilherme Alvarenga, Joao P., Maria Eduarda, Michael Todoroki, Pedro Freitas
 # desc:    LP - Grupo Skane Game (Ruby)
-# version: 0.2
+# version: 0.3
 # script:  ruby
 
 # Variáveis globais para o menu
@@ -347,6 +347,7 @@ def draw
     x_centered = (240 - text.length * 6) / 2  # Cada caractere geralmente ocupa 6 pixels de largura
     y_centered = (136 - 8) / 2  # 8 pixels é a altura aproximada de uma linha de texto
     print(text, x_centered, y_centered, 12)
+    music() # Para a música de fundo
   end
 
   # Mensagem de Vitória
@@ -356,6 +357,7 @@ def draw
     x_centered = (240 - text.length * 6) / 2  # Cada caractere geralmente ocupa 6 pixels de largura
     y_centered = (136 - 8) / 2  # 8 pixels é a altura aproximada de uma linha de texto
     print(text, x_centered, y_centered, 12)
+    music() # Para a música de fundo
   end
   
   # Exibe o score
@@ -371,3 +373,5 @@ def TIC
     draw
   end
 end
+
+music(0, 0, 0, true)  # Inicia a música de fundo
