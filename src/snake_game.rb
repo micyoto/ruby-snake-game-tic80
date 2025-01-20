@@ -69,14 +69,27 @@ def menu_update
 end
 
 def menu_draw
-  cls(0)  # Tenta usar a cor 2 para fundo verde. Ajuste conforme necessário.
+  cls(0) # Limpa a tela 
 
   screen_width = 240
   screen_height = 120
 
-  # Título do jogo
+  # Variável para controlar a animação de mudança de cor do título
+  $t ||= 0  # Inicializa $t se ainda não estiver definido
+
+  # Animação para mudança de cores do título
+  color = 11  # Cor inicial (azul claro)
+  if $t % 60 < 30
+      color = 15  # Muda para branco, cria um efeito piscante
+  end
+
+  # Título do jogo com escala ampliada e centralizado
   title = "SNAKE GAME"
-  print(title, ((screen_width - title.length * 5)  -  10)/ 2, 15, 11) # PRINT(texto, x, y, cor)
+  scale = 2
+  title_width = title.length * 6 * scale  # Calcula a largura do título com a escala
+  x_title = (screen_width - title_width) / 2  # Centraliza o título horizontalmente
+  y_title = 15  # Posição vertical para o título
+  print(title, x_title, y_title, color, false, scale)  # Imprime o título com escala e cor dinâmica
 
   # Definição das opções
   options = [1, 3, 5, "Aleatório"]
@@ -123,6 +136,8 @@ def menu_draw
 
   # Desenhar o botão de confirmação
   desenha_botao($botao_confirmar)
+
+  $t = ($t + 1) % 360  # Incrementa o contador de tempo para animação
 end
 
 def desenha_botao(botao)
@@ -233,7 +248,6 @@ def draw
   offset_x = 8
   offset_y = 8
 
-  # Desenha o fundo da malha, agora centralizado
   (0...GRID_WIDTH).each do |x|
     (0...GRID_HEIGHT).each do |y|
       spr((x + y) % 2 == 0 ? 69 : 75, offset_x + x * CELL_SIZE, offset_y + y * CELL_SIZE, -1)
@@ -243,7 +257,7 @@ def draw
   if $snake.length == 1
     $snake.unshift([$snake[0][0] + $direction[0], $snake[0][1] + $direction[1]])
   end
- 
+
   # Determina o sprite para a cabeça baseado na direção atual
   head_sprite = case $direction
   when [1, 0]  # Direita
@@ -257,7 +271,7 @@ def draw
   else 
     65
   end
-   
+  
   # Desenha a cabeça da cobra com o offset aplicado
   spr(head_sprite, offset_x + $snake[0][0] * CELL_SIZE, offset_y + $snake[0][1] * CELL_SIZE, 6)
   
@@ -279,50 +293,8 @@ def draw
     # Desenha a cauda da cobra com o offset aplicado
     spr(tail_sprite, offset_x + $snake[-1][0] * CELL_SIZE, offset_y + $snake[-1][1] * CELL_SIZE, 6)
   end
-    # Pinta o corpo da cobra
-    if $snake.length > 1
-      $snake[1..-2].each do |segment|
-        directions = direction_change(segment)
-        prev_direction, next_direction = directions
-        body = 64  # Valor padrão para o corpo
-  
-        if prev_direction == [1, 0] && next_direction == [0, 1] || prev_direction == [0, 1] && next_direction == [1, 0]
-          body = prev_direction == [1, 0] ? 79 : 77
-        elsif prev_direction == [1, 0] && next_direction == [0, -1] || prev_direction == [0, -1] && next_direction == [1, 0]
-          body = prev_direction == [1, 0] ? 63 : 78
-        elsif prev_direction == [-1, 0] && next_direction == [0, 1] || prev_direction == [0, 1] && next_direction == [-1, 0]
-          body = prev_direction == [-1, 0] ? 78 : 63
-        elsif prev_direction == [-1, 0] && next_direction == [0, -1] || prev_direction == [0, -1] && next_direction == [-1, 0]
-          body = prev_direction == [-1, 0] ? 77 : 79
-        else
-          body = case [$snake[$snake.index(segment) - 1][0] - segment[0], $snake[$snake.index(segment) - 1][1] - segment[1]]
-          when [1, 0], [-1, 0]  # Horizontal
-            64
-          when [0, -1], [0, 1]  # Vertical
-            76
-          else
-            64
-          end
-        end
-  
-        # Desenha o corpo da cobra com o offset aplicado
-        spr(body, offset_x + segment[0] * CELL_SIZE, offset_y + segment[1] * CELL_SIZE, 6)
-      end
-    end
-  
-    # Desenha a cauda e a cabeça da cobra com os offsets aplicados
-    tail = $snake[-1]
-    spr(tail_sprite, offset_x + tail[0] * CELL_SIZE, offset_y + tail[1] * CELL_SIZE, 6)
-  
-    head = $snake[0]
-    spr(head_sprite, offset_x + head[0] * CELL_SIZE, offset_y + head[1] * CELL_SIZE, 6)
-  
-    # Desenha as comidas com os offsets aplicados
-    $foods.each do |food|
-      spr(70, offset_x + food[0] * CELL_SIZE, offset_y + food[1] * CELL_SIZE, -1)
-    end
-  
-    # Pinta o corpo da cobra
+
+  # Pinta o corpo da cobra
   if $snake.length > 1
     $snake[1..-2].each do |segment|
       directions = direction_change(segment)
@@ -348,44 +320,48 @@ def draw
         end
       end
 
-      # Desenha o corpo da cobra com o offset aplicado
       spr(body, offset_x + segment[0] * CELL_SIZE, offset_y + segment[1] * CELL_SIZE, 6)
     end
   end
 
-  # Desenha a cauda e a cabeça da cobra com os offsets aplicados
   tail = $snake[-1]
   spr(tail_sprite, offset_x + tail[0] * CELL_SIZE, offset_y + tail[1] * CELL_SIZE, 6)
 
   head = $snake[0]
   spr(head_sprite, offset_x + head[0] * CELL_SIZE, offset_y + head[1] * CELL_SIZE, 6)
 
-  # Desenha as comidas com os offsets aplicados
   $foods.each do |food|
-    spr(70, offset_x + food[0] * CELL_SIZE, offset_y + food[1] * CELL_SIZE, -1)
+    spr(70, offset_x + food[0] * CELL_SIZE, offset_y + food[1] * CELL_SIZE, 6)
   end
-    # Mensagem de Game Over
-    if $game_over
-      # Centraliza a mensagem "GAME OVER" horizontalmente e ajusta verticalmente
-      text = "GAME OVER"
-      x_centered = (240 - text.length * 6) / 2  # Cada caractere geralmente ocupa 6 pixels de largura
-      y_centered = (136 - 8) / 2  # 8 pixels é a altura aproximada de uma linha de texto
-      print(text, x_centered, y_centered, 12)
-    end
-  
-    # Mensagem de Vitória
-    if $game_win
-      # Centraliza a mensagem "PARABÉNS PELA VITÓRIA!" horizontalmente e ajusta verticalmente
-      text = "PARABÉNS PELA VITÓRIA!"
-      x_centered = (240 - text.length * 6) / 2  # Cada caractere geralmente ocupa 6 pixels de largura
-      y_centered = (136 - 8) / 2  # 8 pixels é a altura aproximada de uma linha de texto
-      print(text, x_centered, y_centered, 12)
-    end
+
+  rect_border_x = offset_x - 1
+  rect_border_y = offset_y - 1
+  rect_border_width = GRID_WIDTH * CELL_SIZE + 2  # Largura da malha mais 2 pixels para borda
+  rect_border_height = GRID_HEIGHT * CELL_SIZE + 2  # Altura da malha mais 2 pixels para borda
+  rectb(rect_border_x, rect_border_y, rect_border_width, rect_border_height, 12)  # Cor 15 é branco no TIC-80
+
+  # Mensagem de Game Over
+  if $game_over
+    # Centraliza a mensagem "GAME OVER" horizontalmente e ajusta verticalmente
+    text = "GAME OVER"
+    x_centered = (240 - text.length * 6) / 2  # Cada caractere geralmente ocupa 6 pixels de largura
+    y_centered = (136 - 8) / 2  # 8 pixels é a altura aproximada de uma linha de texto
+    print(text, x_centered, y_centered, 12)
+  end
+
+  # Mensagem de Vitória
+  if $game_win
+    # Centraliza a mensagem "PARABÉNS PELA VITÓRIA!" horizontalmente e ajusta verticalmente
+    text = "PARABÉNS PELA VITÓRIA!"
+    x_centered = (240 - text.length * 6) / 2  # Cada caractere geralmente ocupa 6 pixels de largura
+    y_centered = (136 - 8) / 2  # 8 pixels é a altura aproximada de uma linha de texto
+    print(text, x_centered, y_centered, 12)
+  end
   
   # Exibe o score
-  print("SCORE: #{$score}", 8, 1, 11)  
+  print("SCORE: #{$score}", 8, 0.5, 12)  
 end
- 
+
 def TIC
   if $menu
     menu_update
