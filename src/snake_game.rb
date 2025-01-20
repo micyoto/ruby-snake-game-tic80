@@ -178,10 +178,10 @@ def adjust_speed
   $last_speed_update ||= 0
   $score ||= 0
 
-  # Reduz o speed_factor quando o score ultrapassa múltiplos de 500, até um mínimo de 2
-  if $score >= $last_speed_update + 500
+  # Reduz o speed_factor quando o score ultrapassa múltiplos de 50, até um mínimo de 2
+  if $score >= $last_speed_update + 50
     $speed_factor = [2, $speed_factor - 1].max
-    $last_speed_update += 500
+    $last_speed_update += 59
   end
 end
 
